@@ -495,10 +495,40 @@ export default function DashboardPage() {
 
                     {displayTransactions.length === 0 ? (
                         <Card className="border-border/20 bg-card/30">
-                            <CardContent className="p-6 text-center text-sm text-muted-foreground">
-                                {transactions.length === 0
-                                    ? "任務記録なし。最初の任務を遂行せよ。"
-                                    : "検索条件に一致する記録がありません。"}
+                            <CardContent className="p-6 text-center">
+                                {transactions.length === 0 ? (
+                                    <div className="space-y-4">
+                                        <div className="text-4xl">🎖️</div>
+                                        <div className="text-sm font-bold tracking-wider">最初の任務を遂行せよ</div>
+                                        <div className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                                            取引を記録するとXPが蓄積し、階級が昇格する。<br />
+                                            まずは1件の戦果報告から始めよ。
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto text-[10px] text-muted-foreground">
+                                            <div className="p-2 rounded border border-border/20 bg-background/30">
+                                                <div className="text-lg mb-1">📋</div>
+                                                <div>記録する</div>
+                                            </div>
+                                            <div className="p-2 rounded border border-border/20 bg-background/30">
+                                                <div className="text-lg mb-1">📊</div>
+                                                <div>分析する</div>
+                                            </div>
+                                            <div className="p-2 rounded border border-border/20 bg-background/30">
+                                                <div className="text-lg mb-1">⚔️</div>
+                                                <div>昇格する</div>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            onClick={() => router.push("/transaction")}
+                                            className="bg-[var(--color-cyber-cyan)] text-background font-bold tracking-wider hover:bg-[var(--color-cyber-cyan)]/80"
+                                        >
+                                            <PlusCircle className="mr-2" size={16} />
+                                            最初の任務を記録
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="text-sm text-muted-foreground">検索条件に一致する記録がありません。</div>
+                                )}
                             </CardContent>
                         </Card>
                     ) : (
