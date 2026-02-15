@@ -161,7 +161,7 @@ export default async function LandingPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: "⚔️",
@@ -176,22 +176,32 @@ export default async function LandingPage() {
               {
                 icon: "🏆",
                 title: "戦場ランキング",
-                description: "全エージェントの総戦闘力でランク付け。敬礼ボタンで仲間に敬意を送れ。",
+                description: "月間・総合・店舗別の多角的ランキング。Respectで同胞に敬意を送れ。",
+              },
+              {
+                icon: "🔥",
+                title: "連続記録ボーナス",
+                description: "毎日記録を続けるとストリークが加算。3日以上で特別カード、7日で王冠獲得。",
+              },
+              {
+                icon: "👤",
+                title: "エージェントプロフィール",
+                description: "他のエージェントの戦歴を閲覧可能。公開任務にRespectを送ってソーシャル交流。",
               },
               {
                 icon: "💳",
                 title: "IDカード",
-                description: "公式ステータス認定証を生成。HD画質でダウンロードしてX（旧Twitter）に共有。",
+                description: "統計データ付き公式ステータス認定証を自動生成。HD画質でDL＆Xに共有。",
               },
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="p-5 rounded-lg border border-border/20 bg-card/20 hover:border-[var(--color-cyber-cyan)]/30 transition-all duration-300"
+                className="p-5 rounded-lg border border-border/20 bg-card/20 hover:border-[var(--color-cyber-cyan)]/30 hover:bg-card/40 transition-all duration-300 group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-2xl">{feature.icon}</div>
+                  <div className="text-2xl group-hover:scale-110 transition-transform">{feature.icon}</div>
                   <div>
-                    <h3 className="text-sm font-bold tracking-wider mb-1">{feature.title}</h3>
+                    <h3 className="text-sm font-bold tracking-wider mb-1 group-hover:text-[var(--color-cyber-cyan)] transition-colors">{feature.title}</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
@@ -212,9 +222,26 @@ export default async function LandingPage() {
             すべての戦歴は暗号化され、完全匿名で管理される。<br />
             コードネームの向こうに、あなたの真実がある。
           </p>
+
+          {/* 統計カウンター */}
+          <div className="grid grid-cols-3 gap-4 mb-8 max-w-sm mx-auto">
+            <div>
+              <div className="text-xl font-mono font-bold text-[var(--color-cyber-cyan)]">6</div>
+              <div className="text-[9px] text-muted-foreground tracking-wider">階級ランク</div>
+            </div>
+            <div>
+              <div className="text-xl font-mono font-bold text-[var(--color-neon-magenta)]">∞</div>
+              <div className="text-[9px] text-muted-foreground tracking-wider">記録上限なし</div>
+            </div>
+            <div>
+              <div className="text-xl font-mono font-bold text-orange-400">24/7</div>
+              <div className="text-[9px] text-muted-foreground tracking-wider">常時稼働</div>
+            </div>
+          </div>
+
           <Link
             href="/login"
-            className="inline-flex items-center justify-center h-14 px-12 bg-[var(--color-neon-magenta)] text-background font-bold tracking-[0.2em] rounded-md hover:bg-[var(--color-neon-magenta)]/80 transition-all duration-300 text-base"
+            className="inline-flex items-center justify-center h-14 px-12 bg-[var(--color-neon-magenta)] text-background font-bold tracking-[0.2em] rounded-md hover:bg-[var(--color-neon-magenta)]/80 hover:shadow-[0_0_30px_rgba(255,0,153,0.3)] transition-all duration-300 text-base"
           >
             今すぐ参戦 →
           </Link>
