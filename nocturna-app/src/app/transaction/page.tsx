@@ -1,12 +1,12 @@
 "use client";
 
-/** NOCTURNA トランザクション入力 — Trade Terminal
+/** NOCTURNA トランザクション入力 v2 — Trade Terminal
  *
- * 新store API（async/await）対応版。
- * UIロジックは変更なし、import先がstoreに統一。
+ * 店名/キャストの自動補完、金額クイック入力、XPプレビュー強化。
+ * 入力体験を極限まで磨き込んだ戦場記録端末。
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,23 +17,34 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send, X, Globe } from "lucide-react";
+import { ArrowLeft, Send, X, Globe, Zap, TrendingUp } from "lucide-react";
 import { NavBar } from "@/components/nav-bar";
 import { LevelUpModal } from "@/components/level-up-modal";
 import { Switch } from "@/components/ui/switch";
-import { getAgent, isAuthenticated, signOut, addTransaction } from "@/lib/store";
-import { SECTORS, GRADES, determineRank } from "@/lib/game-logic";
-import type { Agent, Grade, TransactionInput } from "@/types/database";
+import { getAgent, getTransactions, isAuthenticated, signOut, addTransaction } from "@/lib/store";
+import { SECTORS, GRADES, determineRank, calculateXp } from "@/lib/game-logic";
+import type { Agent, Grade, TransactionInput, Transaction } from "@/types/database";
 
 const TAG_PRESETS = [
     "初回", "リピート", "神対応", "コスパ◎", "美人", "テクニシャン",
     "雰囲気◎", "地雷", "新人", "ベテラン", "VIP", "指名",
 ];
 
+/** 投資額のクイック入力ボタン定義 */
+const QUICK_AMOUNTS = [
+    { label: "¥10K", value: 10000 },
+    { label: "¥20K", value: 20000 },
+    { label: "¥30K", value: 30000 },
+    { label: "¥50K", value: 50000 },
+    { label: "¥80K", value: 80000 },
+    { label: "¥100K", value: 100000 },
+];
+
 export default function TransactionPage() {
     const router = useRouter();
     const [agent, setAgent] = useState<Agent | null>(null);
     const [mounted, setMounted] = useState(false);
+    const [previousTransactions, setPreviousTransactions] = useState<Transaction[]>([]);
 
     const [formData, setFormData] = useState<TransactionInput>({
         transaction_date: new Date().toISOString().split("T")[0],
@@ -50,6 +61,8 @@ export default function TransactionPage() {
     const [tagInput, setTagInput] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [showVendorSuggest, setShowVendorSuggest] = useState(false);
+    const [showCastSuggest, setShowCastSuggest] = useState(false);
 
     const [levelUpData, setLevelUpData] = useState<{
         isOpen: boolean;
@@ -64,10 +77,47 @@ export default function TransactionPage() {
         const init = async () => {
             const authed = await isAuthenticated();
             if (!authed) { router.push("/login"); return; }
-            setAgent(await getAgent());
+            const [agentData, txData] = await Promise.all([getAgent(), getTransactions()]);
+            setAgent(agentData);
+            setPreviousTransactions(txData);
         };
         init();
     }, [router]);
+
+    // 過去の店名/キャストのユニーク一覧（自動補完用）
+    const vendorSuggestions = useMemo(() => {
+        const vendors = [...new Set(previousTransactions.filter(tx => tx.vendor).map(tx => tx.vendor as string))];
+        return vendors.sort();
+    }, [previousTransactions]);
+
+    const castSuggestions = useMemo(() => {
+        const casts = [...new Set(previousTransactions.filter(tx => tx.cast_alias).map(tx => tx.cast_alias as string))];
+        return casts.sort();
+    }, [previousTransactions]);
+
+    // フィルタリングされた候補
+    const filteredVendors = useMemo(() => {
+        if (!formData.vendor) return vendorSuggestions.slice(0, 5);
+        return vendorSuggestions.filter(v => v.toLowerCase().includes(formData.vendor!.toLowerCase())).slice(0, 5);
+    }, [formData.vendor, vendorSuggestions]);
+
+    const filteredCasts = useMemo(() => {
+        if (!formData.cast_alias) return castSuggestions.slice(0, 5);
+        return castSuggestions.filter(c => c.toLowerCase().includes(formData.cast_alias!.toLowerCase())).slice(0, 5);
+    }, [formData.cast_alias, castSuggestions]);
+
+    // XPプレビュー計算
+    const xpPreview = useMemo(() => {
+        if (formData.investment <= 0 || !agent) return null;
+        // 同じ店舗への訪問回数をカウント（コンボ判定用）
+        const vendorVisits = formData.vendor
+            ? previousTransactions.filter(tx => tx.vendor === formData.vendor).length
+            : 0;
+        const isCombo = vendorVisits > 0;
+        const isFirstVisit = formData.vendor ? vendorVisits === 0 : false;
+        const xp = calculateXp(formData.investment, isCombo, isFirstVisit);
+        return { xp, isCombo, vendorVisits };
+    }, [formData.investment, formData.grade, formData.vendor, previousTransactions, agent]);
 
     if (!mounted || !agent) {
         return (
@@ -153,6 +203,7 @@ export default function TransactionPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* 基本情報カード */}
                     <Card className="border-border/20 bg-card/30">
                         <CardContent className="p-4 space-y-4">
                             <div className="space-y-2">
@@ -171,20 +222,87 @@ export default function TransactionPage() {
                             <div className="space-y-2">
                                 <Label className="text-xs tracking-wider text-muted-foreground">投資額（¥）</Label>
                                 <Input type="number" min={0} value={formData.investment || ""} onChange={(e) => setFormData(prev => ({ ...prev, investment: parseInt(e.target.value) || 0 }))} placeholder="30000" className="font-mono text-lg bg-background/50 border-border/50" />
+                                {/* クイック入力ボタン */}
+                                <div className="flex flex-wrap gap-1.5">
+                                    {QUICK_AMOUNTS.map(qa => (
+                                        <button
+                                            key={qa.value}
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, investment: qa.value }))}
+                                            className={`px-2.5 py-1 text-[10px] font-mono rounded border transition-all ${formData.investment === qa.value
+                                                ? "border-[var(--color-cyber-cyan)] bg-[var(--color-cyber-cyan-dim)] text-[var(--color-cyber-cyan)]"
+                                                : "border-border/20 text-muted-foreground hover:border-border/40 hover:text-foreground"
+                                                }`}
+                                        >
+                                            {qa.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
 
+                    {/* 詳細情報カード */}
                     <Card className="border-border/20 bg-card/30">
                         <CardContent className="p-4 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                {/* 店名 — 自動補完付き */}
+                                <div className="space-y-2 relative">
                                     <Label className="text-xs tracking-wider text-muted-foreground">店名</Label>
-                                    <Input value={formData.vendor} onChange={(e) => setFormData(prev => ({ ...prev, vendor: e.target.value }))} placeholder="任意" className="font-mono text-sm bg-background/50 border-border/50" />
+                                    <Input
+                                        value={formData.vendor}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, vendor: e.target.value }))}
+                                        onFocus={() => setShowVendorSuggest(true)}
+                                        onBlur={() => setTimeout(() => setShowVendorSuggest(false), 200)}
+                                        placeholder="任意"
+                                        className="font-mono text-sm bg-background/50 border-border/50"
+                                    />
+                                    {showVendorSuggest && filteredVendors.length > 0 && (
+                                        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-md shadow-lg max-h-32 overflow-y-auto">
+                                            {filteredVendors.map(vendor => (
+                                                <button
+                                                    key={vendor}
+                                                    type="button"
+                                                    onMouseDown={() => {
+                                                        setFormData(prev => ({ ...prev, vendor }));
+                                                        setShowVendorSuggest(false);
+                                                    }}
+                                                    className="w-full text-left px-3 py-1.5 text-xs font-mono hover:bg-[var(--color-cyber-cyan-dim)] transition-colors"
+                                                >
+                                                    {vendor}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="space-y-2">
+                                {/* 担当 — 自動補完付き */}
+                                <div className="space-y-2 relative">
                                     <Label className="text-xs tracking-wider text-muted-foreground">担当</Label>
-                                    <Input value={formData.cast_alias} onChange={(e) => setFormData(prev => ({ ...prev, cast_alias: e.target.value }))} placeholder="任意" className="font-mono text-sm bg-background/50 border-border/50" />
+                                    <Input
+                                        value={formData.cast_alias}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, cast_alias: e.target.value }))}
+                                        onFocus={() => setShowCastSuggest(true)}
+                                        onBlur={() => setTimeout(() => setShowCastSuggest(false), 200)}
+                                        placeholder="任意"
+                                        className="font-mono text-sm bg-background/50 border-border/50"
+                                    />
+                                    {showCastSuggest && filteredCasts.length > 0 && (
+                                        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-md shadow-lg max-h-32 overflow-y-auto">
+                                            {filteredCasts.map(cast => (
+                                                <button
+                                                    key={cast}
+                                                    type="button"
+                                                    onMouseDown={() => {
+                                                        setFormData(prev => ({ ...prev, cast_alias: cast }));
+                                                        setShowCastSuggest(false);
+                                                    }}
+                                                    className="w-full text-left px-3 py-1.5 text-xs font-mono hover:bg-[var(--color-cyber-cyan-dim)] transition-colors"
+                                                >
+                                                    {cast}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -238,17 +356,40 @@ export default function TransactionPage() {
                         </CardContent>
                     </Card>
 
+                    {/* XPプレビュー */}
+                    {xpPreview && (
+                        <Card className="border-[var(--color-cyber-cyan)]/20 bg-[var(--color-cyber-cyan-dim)]">
+                            <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Zap size={16} className="text-[var(--color-cyber-cyan)]" />
+                                        <div>
+                                            <div className="text-xs tracking-wider text-muted-foreground">予測獲得XP</div>
+                                            <div className="text-lg font-mono font-bold text-[var(--color-cyber-cyan)]">
+                                                +{xpPreview.xp.toLocaleString()} XP
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        {xpPreview.isCombo && (
+                                            <div className="flex items-center gap-1 text-[10px] text-[var(--color-neon-magenta)]">
+                                                <TrendingUp size={10} />
+                                                コンボ: {xpPreview.vendorVisits}回目
+                                            </div>
+                                        )}
+                                        <div className="text-[10px] text-muted-foreground font-mono">
+                                            ¥{formData.investment.toLocaleString()} × {formData.grade}
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     <Button type="submit" disabled={isSubmitting || formData.investment <= 0} className="w-full h-14 bg-[var(--color-cyber-cyan)] text-background text-base font-bold tracking-[0.2em] hover:bg-[var(--color-cyber-cyan)]/80 transition-all duration-300 disabled:opacity-30">
                         <Send className="mr-2" size={18} />
                         {isSubmitting ? "処理中..." : "任務記録を実行"}
                     </Button>
-
-                    {formData.investment > 0 && (
-                        <div className="text-center text-xs text-muted-foreground">
-                            予定獲得XP: <span className="text-[var(--color-cyber-cyan)] font-mono">+{formData.investment.toLocaleString()}</span>
-                            {formData.vendor && <span className="text-[10px] ml-2">(ボーナス計算は記録時に確定)</span>}
-                        </div>
-                    )}
                 </form>
             </main>
 

@@ -76,6 +76,38 @@ export default function QuestsPage() {
                     </div>
                 </div>
 
+                {/* 全体達成率サマリー */}
+                <div className="grid grid-cols-2 gap-3">
+                    <Card className={`border-border/20 ${completedDaily === dailyQuests.length && dailyQuests.length > 0 ? "bg-[var(--color-cyber-cyan-dim)] border-[var(--color-cyber-cyan)]/30 glow-border-cyan" : "bg-card/30"}`}>
+                        <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-1">
+                                {completedDaily === dailyQuests.length && dailyQuests.length > 0 ? "🎯" : "⚔️"}
+                            </div>
+                            <div className="text-lg font-mono font-bold text-[var(--color-cyber-cyan)]">
+                                {completedDaily}/{dailyQuests.length}
+                            </div>
+                            <div className="text-[10px] tracking-wider text-muted-foreground">日次ミッション</div>
+                            {completedDaily === dailyQuests.length && dailyQuests.length > 0 && (
+                                <Badge className="mt-1 bg-[var(--color-cyber-cyan)] text-background text-[8px]">ALL CLEAR</Badge>
+                            )}
+                        </CardContent>
+                    </Card>
+                    <Card className={`border-border/20 ${completedWeekly === weeklyQuests.length && weeklyQuests.length > 0 ? "bg-[var(--color-neon-magenta-glow)] border-[var(--color-neon-magenta)]/30 glow-border-magenta" : "bg-card/30"}`}>
+                        <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-1">
+                                {completedWeekly === weeklyQuests.length && weeklyQuests.length > 0 ? "👑" : "🏴"}
+                            </div>
+                            <div className="text-lg font-mono font-bold text-[var(--color-neon-magenta)]">
+                                {completedWeekly}/{weeklyQuests.length}
+                            </div>
+                            <div className="text-[10px] tracking-wider text-muted-foreground">週次ミッション</div>
+                            {completedWeekly === weeklyQuests.length && weeklyQuests.length > 0 && (
+                                <Badge className="mt-1 bg-[var(--color-neon-magenta)] text-background text-[8px]">ALL CLEAR</Badge>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
                 <Tabs defaultValue="quests" className="space-y-4">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="quests" className="text-xs tracking-wider gap-1.5">
