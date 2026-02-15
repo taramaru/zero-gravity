@@ -67,11 +67,11 @@ export default async function LandingPage() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-2 tracking-wide">
-            夜の資産を、<span className="text-[var(--color-cyber-cyan)]">戦略的</span>に管理せよ。
+            夜の記録を、<span className="text-[var(--color-cyber-cyan)]">スマートに</span>残そう。
           </p>
           <p className="text-sm text-muted-foreground/60 mb-10 max-w-md mx-auto leading-relaxed">
-            ゲーミフィケーション × 暗号化された記録で、
-            あなたの夜を数値で制圧する管理システム。
+            ゲーム感覚で記録して、ランクアップ。
+            匿名で安心、あなただけの記録アプリ。
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
@@ -79,7 +79,7 @@ export default async function LandingPage() {
               href="/login"
               className="inline-flex items-center justify-center h-14 px-10 bg-[var(--color-cyber-cyan)] text-background font-bold tracking-[0.2em] rounded-md hover:bg-[var(--color-cyber-cyan)]/80 transition-all duration-300 text-base"
             >
-              参戦する →
+              はじめる →
             </Link>
             <Link
               href="#features"
@@ -90,7 +90,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="text-[10px] tracking-wider text-muted-foreground/40">
-            SYSTEM: ZERO-EYE v2.0 | 完全匿名 · 暗号化接続 · 無料
+            完全匿名 · 暗号化接続 · 無料
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export default async function LandingPage() {
           <div className="text-center mb-16">
             <div className="text-[10px] tracking-[0.3em] text-[var(--color-neon-magenta)] mb-3">HOW IT WORKS</div>
             <h2 className="font-[family-name:var(--font-outfit)] text-2xl md:text-3xl font-bold tracking-wider">
-              3ステップで制圧開始
+              3ステップではじめよう
             </h2>
           </div>
 
@@ -116,21 +116,21 @@ export default async function LandingPage() {
             {[
               {
                 step: "01",
-                icon: "🎖️",
-                title: "エージェント登録",
-                description: "Googleアカウントで即座に参戦。匿名のコードネームでプライバシーを完全保護。",
+                icon: "👤",
+                title: "アカウント作成",
+                description: "Googleアカウントで即スタート。匿名のニックネームでプライバシーも安心。",
               },
               {
                 step: "02",
-                icon: "📋",
-                title: "任務を記録",
-                description: "エリア、投資額、機密等級、タグ。すべての夜を戦術データとして蓄積。",
+                icon: "📝",
+                title: "記録する",
+                description: "店名、金額、評価をサクッと記録。証明写真を添付すると認証ボーナスも。",
               },
               {
                 step: "03",
                 icon: "📊",
-                title: "戦闘力を分析",
-                description: "リアルタイムで階級が昇格。ランキングで他のエージェントと競い合え。",
+                title: "ランクアップ",
+                description: "記録するほどランクが上がる。バッジを集めて、ランキングで競おう。",
               },
             ].map((item) => (
               <div
@@ -157,41 +157,41 @@ export default async function LandingPage() {
           <div className="text-center mb-16">
             <div className="text-[10px] tracking-[0.3em] text-[var(--color-cyber-cyan)] mb-3">FEATURES</div>
             <h2 className="font-[family-name:var(--font-outfit)] text-2xl md:text-3xl font-bold tracking-wider">
-              装備一覧
+              できること
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                icon: "⚔️",
-                title: "階級システム",
-                description: "投資額に応じて自動昇格。STREET NOVICEからSAINT ZEROまで6段階の称号。",
+                icon: "🏅",
+                title: "ランクシステム",
+                description: "記録するほどランクアップ。6段階のランクであなたの実績を称号に。",
               },
               {
                 icon: "🎯",
-                title: "作戦指令",
-                description: "日次・週次ミッションで追加報酬。達成すれば限定勲章が解除される。",
+                title: "チャレンジ",
+                description: "日次・週次のチャレンジをクリアしてバッジをゲット。コレクション要素も。",
               },
               {
                 icon: "🏆",
-                title: "戦場ランキング",
-                description: "月間・総合・店舗別の多角的ランキング。Respectで同胞に敬意を送れ。",
+                title: "ランキング",
+                description: "月間・総合・店舗別のランキング。仲間と競い合おう。",
               },
               {
                 icon: "🔥",
                 title: "連続記録ボーナス",
-                description: "毎日記録を続けるとストリークが加算。3日以上で特別カード、7日で王冠獲得。",
+                description: "毎日記録を続けると連続ボーナス。途切れそうになると通知でお知らせ。",
               },
               {
-                icon: "👤",
-                title: "エージェントプロフィール",
-                description: "他のエージェントの戦歴を閲覧可能。公開任務にRespectを送ってソーシャル交流。",
+                icon: "📸",
+                title: "証明写真で認証",
+                description: "レシートや名刺の写真を添付で認証ボーナス+10%。信頼性もアップ。",
               },
               {
                 icon: "💳",
-                title: "IDカード",
-                description: "統計データ付き公式ステータス認定証を自動生成。HD画質でDL＆Xに共有。",
+                title: "ステータスカード",
+                description: "あなたの実績を1枚のカードに。ダウンロード＆SNSでシェアできる。",
               },
             ].map((feature) => (
               <div
@@ -216,18 +216,18 @@ export default async function LandingPage() {
         <div className="max-w-lg mx-auto text-center">
           <div className="text-4xl mb-4">🌙</div>
           <h2 className="font-[family-name:var(--font-outfit)] text-2xl md:text-3xl font-bold tracking-wider mb-4">
-            準備はできたか。
+            はじめよう。
           </h2>
           <p className="text-sm text-muted-foreground mb-8">
-            すべての戦歴は暗号化され、完全匿名で管理される。<br />
-            コードネームの向こうに、あなたの真実がある。
+            すべての記録は暗号化され、完全匿名で管理されます。<br />
+            あなたの夜を、もっと楽しく。
           </p>
 
           {/* 統計カウンター */}
           <div className="grid grid-cols-3 gap-4 mb-8 max-w-sm mx-auto">
             <div>
               <div className="text-xl font-mono font-bold text-[var(--color-cyber-cyan)]">6</div>
-              <div className="text-[9px] text-muted-foreground tracking-wider">階級ランク</div>
+              <div className="text-[9px] text-muted-foreground tracking-wider">ランク</div>
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-[var(--color-neon-magenta)]">∞</div>
@@ -235,7 +235,7 @@ export default async function LandingPage() {
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-orange-400">24/7</div>
-              <div className="text-[9px] text-muted-foreground tracking-wider">常時稼働</div>
+              <div className="text-[9px] text-muted-foreground tracking-wider">いつでも</div>
             </div>
           </div>
 
@@ -243,7 +243,7 @@ export default async function LandingPage() {
             href="/login"
             className="inline-flex items-center justify-center h-14 px-12 bg-[var(--color-neon-magenta)] text-background font-bold tracking-[0.2em] rounded-md hover:bg-[var(--color-neon-magenta)]/80 hover:shadow-[0_0_30px_rgba(255,0,153,0.3)] transition-all duration-300 text-base"
           >
-            今すぐ参戦 →
+            無料ではじめる →
           </Link>
         </div>
       </section>
@@ -254,7 +254,7 @@ export default async function LandingPage() {
           <span className="font-[family-name:var(--font-outfit)] font-bold tracking-[0.3em]">
             NOCTURNA<span className="text-[var(--color-cyber-cyan)]">.</span>
           </span>
-          <span>SYSTEM: ZERO-EYE v2.0 | 完全匿名 · 暗号化接続</span>
+          <span>SYSTEM: NOCTURNA | 完全匿名 · 暗号化接続</span>
           <span>© {new Date().getFullYear()} NOCTURNA PROJECT</span>
         </div>
       </footer>

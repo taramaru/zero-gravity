@@ -155,6 +155,9 @@ export function getClassInfo(agentClass: AgentClass): { label: string; icon: str
     return classMap[agentClass];
 }
 
+/** 利用可能な兵種一覧 */
+export const CLASS_TYPES: AgentClass[] = ["UNCLASSED", "THE WHALE", "THE SNIPER", "THE SCOUT", "THE BERSERKER"];
+
 /* =====================================================
    セクター定義
    ===================================================== */

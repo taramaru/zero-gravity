@@ -189,7 +189,7 @@ export async function getAgent(): Promise<Agent | null> {
 }
 
 /** エージェント情報を更新 */
-async function updateAgent(updates: Partial<Agent>): Promise<Agent> {
+export async function updateAgent(updates: Partial<Agent>): Promise<Agent> {
     if (isSupabaseConfigured()) {
         const supabase = await getSupabase();
         const { data: { user } } = await supabase.auth.getUser();
