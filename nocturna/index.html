@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOCTURNA | ナイトライフ資産管理システム</title>
+
+    <!-- SEO & OGP -->
+    <meta name="description" content="夜の資産を戦略的に管理せよ。完全匿名・暗号化接続の管理システムで、階級を昇格させランキングで競い合え。">
+    <meta property="og:title" content="NOCTURNA | ナイトライフ資産管理システム">
+    <meta property="og:description" content="夜を資産に変えろ。任務記録・階級システム・ランキング・ミッション。すべてを制圧するインテリジェンス。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nocturna-asset.com">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           デザイントークン
+           ===================================================== */
+        :root {
+            --bg-primary: #030305;
+            --bg-secondary: #0a0a0f;
+            --bg-card: rgba(10, 10, 18, 0.85);
+            --text-primary: #e8e8ec;
+            --text-secondary: #5a5a6e;
+            --text-muted: #33334a;
+            --accent-cyan: #00e0ff;
+            --accent-cyan-dim: rgba(0, 224, 255, 0.15);
+            --accent-cyan-glow: rgba(0, 224, 255, 0.4);
+            --accent-magenta: #ff00aa;
+            --accent-magenta-glow: rgba(255, 0, 170, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-active: rgba(0, 224, 255, 0.3);
+            --font-display: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            --font-jp: 'Noto Sans JP', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* スキャンライン */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px,
+                    rgba(0, 0, 0, 0.15) 1px, rgba(0, 0, 0, 0.15) 2px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* グローオーブ */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-orb--cyan {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-cyan-dim), transparent 70%);
+            top: -10%;
+            right: -10%;
+        }
+
+        .bg-orb--magenta {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-magenta-glow), transparent 70%);
+            bottom: -5%;
+            left: -10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -20px) scale(1.05);
+            }
+
+            66% {
+                transform: translate(-20px, 15px) scale(0.95);
+            }
+        }
+
+        /* =====================================================
+           ナビゲーション
+           ===================================================== */
+        .nav-bar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.3rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+
+        .nav-logo:hover {
+            color: var(--accent-cyan);
+        }
+
+        .nav-logo-dot {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 15px var(--accent-cyan-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-jp);
+            font-size: 0.75rem;
+            letter-spacing: 0.05rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+        }
+
+        /* =====================================================
+           レイアウト
+           ===================================================== */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+        }
+
+        /* =====================================================
+           ヘッダー & ロゴ
+           ===================================================== */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: 0.6rem;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+        }
+
+        .logo-dot {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 20px var(--accent-cyan-glow);
+        }
+
+        .system-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border-active);
+            color: var(--accent-cyan);
+            font-size: 0.7rem;
+            letter-spacing: 0.25rem;
+            text-transform: uppercase;
+            animation: blink-border 3s ease-in-out infinite;
+        }
+
+        @keyframes blink-border {
+
+            0%,
+            100% {
+                border-color: var(--border-active);
+            }
+
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        /* =====================================================
+           メインコピー
+           ===================================================== */
+        .hero-copy {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            border-left: 3px solid var(--accent-cyan);
+            background: linear-gradient(90deg, var(--accent-cyan-dim), transparent 60%);
+            animation: fadeInLeft 1s ease-out 0.3s both;
+        }
+
+        .hero-copy h2 {
+            font-family: var(--font-jp);
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            font-weight: 600;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .hero-copy p {
+            font-family: var(--font-jp);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 2;
+        }
+
+        .text-accent {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 8px var(--accent-cyan-glow);
+        }
+
+        .text-magenta {
+            color: var(--accent-magenta);
+            text-shadow: 0 0 8px var(--accent-magenta-glow);
+        }
+
+        /* =====================================================
+           フィーチャーカード
+           ===================================================== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .feature-card {
+            padding: 1.5rem 1.2rem;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-active);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 224, 255, 0.08);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-number {
+            font-size: 0.7rem;
+            color: var(--accent-cyan);
+            letter-spacing: 0.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .feature-card p {
+            font-family: var(--font-jp);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* =====================================================
+           ステータスバー
+           ===================================================== */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+            padding: 1.2rem 0;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 15px var(--accent-cyan-glow);
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        .status-label {
+            font-family: var(--font-jp);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* =====================================================
+           CTAボタン
+           ===================================================== */
+        .card-cta {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .btn-card-generator {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 2px solid var(--accent-magenta);
+            color: var(--accent-magenta);
+            font-family: var(--font-jp);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+            text-decoration: none;
+            transition: all 0.4s ease;
+        }
+
+        .btn-card-generator:hover {
+            background: var(--accent-magenta);
+            color: var(--bg-primary);
+            box-shadow: 0 0 30px var(--accent-magenta-glow);
+            transform: translateY(-2px);
+        }
+
+        .card-cta-sub {
+            font-family: var(--font-jp);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.8rem;
+        }
+
+        /* =====================================================
+           CTAセクション
+           ===================================================== */
+        .cta-section {
+            padding: 2.5rem;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            position: relative;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-magenta), transparent);
+        }
+
+        .cta-title {
+            font-family: var(--font-jp);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05rem;
+        }
+
+        .cta-sub {
+            text-align: center;
+            font-family: var(--font-jp);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .btn-submit {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--accent-cyan), #00a0cc);
+            color: var(--bg-primary);
+            border: none;
+            font-family: var(--font-jp);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #00f0ff, #00c8ee);
+            box-shadow: 0 0 25px var(--accent-cyan-glow);
+            transform: translateY(-1px);
+        }
+
+        .cta-disclaimer {
+            text-align: center;
+            font-family: var(--font-jp);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 1.2rem;
+            line-height: 1.8;
+        }
+
+        /* =====================================================
+           フッター
+           ===================================================== */
+        .footer {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1rem;
+            animation: fadeIn 1s ease-out 1.5s both;
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* =====================================================
+           アニメーション
+           ===================================================== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                text-shadow: 0 0 15px var(--accent-cyan-glow);
+            }
+
+            50% {
+                text-shadow: 0 0 25px var(--accent-cyan-glow), 0 0 50px rgba(0, 224, 255, 0.15);
+            }
+        }
+
+        /* =====================================================
+           3ステップ専用
+           ===================================================== */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .step-card {
+            text-align: center;
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* =====================================================
+           レスポンシブ
+           ===================================================== */
+        @media (max-width: 640px) {
+            .features {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .status-bar {
+                gap: 1.5rem;
+            }
+
+            .hero-copy {
+                padding: 1.5rem;
+            }
+
+            .cta-section {
+                padding: 1.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 背景グローオーブ -->
+    <div class="bg-orb bg-orb--cyan"></div>
+    <div class="bg-orb bg-orb--magenta"></div>
+
+    <!-- ===== ナビゲーション ===== -->
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-logo">NOCTURNA<span class="nav-logo-dot">.</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">ホーム</a></li>
+            <li><a href="card.html">ステータスカード</a></li>
+            <li><a href="https://app.nocturna-asset.com/login" style="color: var(--accent-cyan); font-weight: 600;">ログイン
+                    →</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+
+            <!-- ===== ヘッダー ===== -->
+            <header class="header">
+                <div class="logo">NOCTURNA<span class="logo-dot">.</span></div>
+                <div class="system-tag">System Online / v2.0 — Open Access</div>
+            </header>
+
+            <!-- ===== ヒーローコピー ===== -->
+            <section class="hero-copy">
+                <h2>
+                    夜を、<span class="text-accent">戦略的</span>に管理せよ。<br>
+                    お前の経験には<span class="text-magenta">戦闘力</span>がある。
+                </h2>
+                <p>
+                    夜の経済圏のための、完全匿名の資産管理システム。<br>
+                    すべての任務を記録し、階級を昇格させ、ランキングで競い合う。<br>
+                    これはレビューサイトではない——<em>インテリジェンス</em>だ。
+                </p>
+            </section>
+
+            <!-- ===== フィーチャーカード — アプリ実機能 ===== -->
+            <section class="features">
+                <div class="feature-card">
+                    <div class="feature-number">01</div>
+                    <h3>📋 任務記録</h3>
+                    <p>エリア・投資額・機密等級・タグを記録。すべての夜を戦術データとして暗号化保存。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">02</div>
+                    <h3>⚔️ 階級システム</h3>
+                    <p>投資額に応じて自動昇格。STREET NOVICEからSAINT ZEROまで6段階の称号を勝ち取れ。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">03</div>
+                    <h3>🏆 戦場ランキング</h3>
+                    <p>全エージェントの総戦闘力でランク付け。敬礼ボタンで仲間に敬意を送り、公開フィードで競え。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">04</div>
+                    <h3>🎯 作戦指令 & 勲章</h3>
+                    <p>日次・週次ミッションをクリアして報酬XPを獲得。達成すれば限定勲章が解除される。</p>
+                </div>
+            </section>
+
+            <!-- ===== ステータスバー ===== -->
+            <section class="status-bar">
+                <div class="status-item">
+                    <div class="status-value">6</div>
+                    <div class="status-label">階級ティア</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="counter-sectors">--</div>
+                    <div class="status-label">稼働セクター数</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="counter-uptime">--</div>
+                    <div class="status-label">システム稼働率 %</div>
+                </div>
+            </section>
+
+            <!-- ===== 3ステップ ===== -->
+            <section style="margin-bottom: 4rem; animation: fadeInUp 1s ease-out 0.8s both;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div
+                        style="font-size: 0.7rem; color: var(--accent-magenta); letter-spacing: 0.25rem; margin-bottom: 0.5rem;">
+                        HOW IT WORKS</div>
+                    <div
+                        style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; letter-spacing: 0.1rem;">
+                        3ステップで制圧開始</div>
+                </div>
+                <div class="steps-grid">
+                    <div class="feature-card step-card">
+                        <div class="feature-number">STEP 01</div>
+                        <div class="step-icon">🎖️</div>
+                        <h3>エージェント登録</h3>
+                        <p>Googleアカウントで即座に参戦。匿名のコードネームを設定しプライバシーを完全保護。</p>
+                    </div>
+                    <div class="feature-card step-card">
+                        <div class="feature-number">STEP 02</div>
+                        <div class="step-icon">📋</div>
+                        <h3>任務を記録</h3>
+                        <p>エリア、投資額、機密等級、タグ。すべての夜を戦術データとして蓄積。</p>
+                    </div>
+                    <div class="feature-card step-card">
+                        <div class="feature-number">STEP 03</div>
+                        <div class="step-icon">📊</div>
+                        <h3>戦闘力を分析</h3>
+                        <p>リアルタイムで階級が昇格。ランキングで他のエージェントと競い合え。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== メイン CTA: アプリログイン ===== -->
+            <div class="card-cta" style="margin-bottom: 2rem;">
+                <a href="https://app.nocturna-asset.com/login" class="btn-card-generator"
+                    style="border-color: var(--accent-cyan); color: var(--accent-cyan); font-size: 1rem; padding: 1.2rem 3rem;">
+                    🔐 今すぐ参戦する
+                </a>
+                <div class="card-cta-sub">Googleアカウントで無料 · 完全匿名 · 暗号化接続</div>
+            </div>
+
+            <!-- ===== カードジェネレーター誘導 ===== -->
+            <div class="card-cta">
+                <a href="card.html" class="btn-card-generator">💳 ステータスカードを発行する</a>
+                <div class="card-cta-sub">あなたのランクを今すぐ確認せよ</div>
+            </div>
+
+            <!-- ===== IDカード紹介セクション ===== -->
+            <section class="cta-section" style="margin-top: 0;">
+                <div class="cta-title">💳 IDカード — 公式ステータス認定証</div>
+                <div class="cta-sub">HD画質でダウンロードしてX（旧Twitter）に共有。#ZERO_CARDで同胞に示せ。</div>
+
+                <div style="text-align: center;">
+                    <a href="https://app.nocturna-asset.com/login" class="btn-submit">
+                        管制室にログインしてカードを生成 →
+                    </a>
+                </div>
+
+                <div class="cta-disclaimer">
+                    Googleアカウントで即座にアクセス可能<br>
+                    完全匿名 · あなたのデータは暗号化され、第三者と共有されることはありません
+                </div>
+            </section>
+
+            <!-- ===== フッター ===== -->
+            <footer class="footer">
+                <p>&copy; 2026 NOCTURNA SYSTEMS. ALL RIGHTS RESERVED.</p>
+                <p style="margin-top: 0.5rem;">
+                    <a href="#">利用規約</a> &nbsp;&middot;&nbsp;
+                    <a href="#">プライバシー</a> &nbsp;&middot;&nbsp;
+                    <a href="#">お問い合わせ</a>
+                </p>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        /* カウントアップアニメーション */
+        function animateCounter(elementId, targetValue, suffix = '') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            const duration = 2000;
+            const startTime = performance.now();
+
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.floor(easedProgress * targetValue);
+
+                element.textContent = currentValue.toLocaleString() + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            requestAnimationFrame(updateCounter);
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateCounter('counter-sectors', 12);
+                animateCounter('counter-uptime', 99.7);
+            }, 1500);
+        });
+    </script>
+
+</body>
+
+</html>

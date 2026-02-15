@@ -1,0 +1,316 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =====================================================
+   NOCTURNAカスタムフォント
+   Google Fonts の @import はNext.js推奨のnext/fontで読み込む
+   ===================================================== */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-outfit);
+  --font-mono: var(--font-jetbrains-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* NOCTURNAアクセントカラー */
+  --color-cyber-cyan: #00e0ff;
+  --color-cyber-cyan-dim: rgba(0, 224, 255, 0.15);
+  --color-cyber-cyan-glow: rgba(0, 224, 255, 0.4);
+  --color-neon-magenta: #ff00aa;
+  --color-neon-magenta-glow: rgba(255, 0, 170, 0.3);
+  --color-neon-red: #ff003c;
+}
+
+/* =====================================================
+   NOCTURNAダークテーマ（唯一のテーマ）
+   闇こそが正義。ライトモードは存在しない。
+   ===================================================== */
+:root {
+  --radius: 0.5rem;
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.93 0.01 260);
+  --card: oklch(0.12 0.01 260);
+  --card-foreground: oklch(0.93 0.01 260);
+  --popover: oklch(0.12 0.01 260);
+  --popover-foreground: oklch(0.93 0.01 260);
+  --primary: oklch(0.75 0.18 195);
+  --primary-foreground: oklch(0.08 0.01 260);
+  --secondary: oklch(0.18 0.01 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+  --muted: oklch(0.18 0.01 260);
+  --muted-foreground: oklch(0.55 0.01 260);
+  --accent: oklch(0.18 0.02 260);
+  --accent-foreground: oklch(0.93 0.01 260);
+  --destructive: oklch(0.65 0.25 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.75 0.18 195);
+  --chart-1: oklch(0.75 0.18 195);
+  --chart-2: oklch(0.70 0.20 330);
+  --chart-3: oklch(0.80 0.15 85);
+  --chart-4: oklch(0.65 0.22 300);
+  --chart-5: oklch(0.60 0.20 15);
+  --sidebar: oklch(0.10 0.01 260);
+  --sidebar-foreground: oklch(0.93 0.01 260);
+  --sidebar-primary: oklch(0.75 0.18 195);
+  --sidebar-primary-foreground: oklch(0.08 0.01 260);
+  --sidebar-accent: oklch(0.18 0.02 260);
+  --sidebar-accent-foreground: oklch(0.93 0.01 260);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.75 0.18 195);
+}
+
+/* ダークモードも同じ（常時ダーク） */
+.dark {
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.93 0.01 260);
+  --card: oklch(0.12 0.01 260);
+  --card-foreground: oklch(0.93 0.01 260);
+  --popover: oklch(0.12 0.01 260);
+  --popover-foreground: oklch(0.93 0.01 260);
+  --primary: oklch(0.75 0.18 195);
+  --primary-foreground: oklch(0.08 0.01 260);
+  --secondary: oklch(0.18 0.01 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+  --muted: oklch(0.18 0.01 260);
+  --muted-foreground: oklch(0.55 0.01 260);
+  --accent: oklch(0.18 0.02 260);
+  --accent-foreground: oklch(0.93 0.01 260);
+  --destructive: oklch(0.65 0.25 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.75 0.18 195);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-mono), monospace;
+  }
+}
+
+/* =====================================================
+   NOCTURNAグローバルエフェクト
+   ===================================================== */
+
+/* CRTスキャンライン — ハッキングされた端末の空気感 */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.12) 1px,
+      rgba(0, 0, 0, 0.12) 2px);
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* サイバーグロー — テキストやボーダーにネオン効果 */
+.glow-cyan {
+  text-shadow: 0 0 10px var(--color-cyber-cyan-glow),
+    0 0 20px var(--color-cyber-cyan-dim);
+}
+
+.glow-magenta {
+  text-shadow: 0 0 10px var(--color-neon-magenta-glow),
+    0 0 20px var(--color-neon-magenta-glow);
+}
+
+/* パルスアニメーション */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ページ遷移フェードイン */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* カードのホバーエフェクト強化 */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 224, 255, 0.08);
+}
+
+/* プログレスバーのアニメーション */
+@keyframes bar-grow {
+  from {
+    width: 0;
+  }
+}
+
+.animate-bar-grow {
+  animation: bar-grow 0.8s ease-out;
+}
+
+/* スケルトンローディング */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      oklch(0.15 0.01 260) 25%,
+      oklch(0.20 0.01 260) 50%,
+      oklch(0.15 0.01 260) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.25rem;
+}
+
+/* ナンバーカウントアップアニメーション */
+@keyframes number-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-number-pop {
+  animation: number-pop 0.5s ease-out;
+}
+
+/* ネオングロー — ボーダー用 */
+.glow-border-cyan {
+  box-shadow: 0 0 10px var(--color-cyber-cyan-dim),
+    0 0 30px rgba(0, 224, 255, 0.1);
+}
+
+.glow-border-magenta {
+  box-shadow: 0 0 10px var(--color-neon-magenta-glow),
+    0 0 30px rgba(255, 0, 170, 0.1);
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.25 0.01 260);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.35 0.01 260);
+}
